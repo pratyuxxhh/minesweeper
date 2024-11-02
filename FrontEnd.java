@@ -1,12 +1,21 @@
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.io.File;
+import java.io.IOException;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class FrontEnd extends JFrame implements ActionListener{
@@ -15,6 +24,10 @@ public class FrontEnd extends JFrame implements ActionListener{
     static JPanel pnl ;
     static JPanel pnl2 ;
     static JButton restart;
+    static JButton easy;
+    static JButton hard;
+    JLabel pnnl ;
+    
 
     static JButton play;
     static JButton[][] btnArr;
@@ -27,8 +40,12 @@ public class FrontEnd extends JFrame implements ActionListener{
 
     }
     public void homepage(){
+         pnnl = new JLabel();
+        pnnl.setBounds(0,0,900,650);
+        pnnl.setIcon(new ImageIcon("bj4.png"));
+        this.add(pnnl);
         play = new JButton();
-        play.setBounds((frmW-200)/2 ,(frmH-80)/2 , 200 ,80);
+        play.setBounds((frmW)/2-100 ,(frmH)/2-60 , 200 ,80);
         play.setText("PLAY");
         play.setFocusable(false);
         play.setFont(new Font("SansSerif", Font.ITALIC  ,25));
@@ -56,8 +73,9 @@ public class FrontEnd extends JFrame implements ActionListener{
                 btnArr[i][j] = new JButton();
                 btnArr[i][j].setBounds(i*btnSize ,j*btnSize, btnSize , btnSize);
                 btnArr[i][j].setSize(40 ,40);
+                btnArr[i][j].setPreferredSize(new Dimension(40,40));
                 btnArr[i][j].setFocusable(false);
-                btnArr[i][j].setFont(new Font("Arial" ,Font.PLAIN ,15));
+                btnArr[i][j].setFont(new Font("Arial" ,Font.BOLD ,15));
                 btnArr[i][j].addActionListener(this);
                 btnArr[i][j].setBackground(new Color(255,204,153));
                 btnArr[i][j].setVerticalTextPosition(JButton.CENTER);
@@ -81,16 +99,35 @@ public class FrontEnd extends JFrame implements ActionListener{
         }
         if (e.getSource()==restart) {
             this.dispose();
-            backEnd.left = 225;
+            // backEnd.left = 225;
             FrontEnd frn = new FrontEnd();
-            backEnd.setMineCode();
-            backEnd.setMinesPosition();
+            // backEnd.setMineCode();
+            // // backEnd.setMinesPosition();
+            // easyOrHard();
         }
         if (e.getSource()==play) {
             this.dispose();
             this.remove(play);
-            backEnd.setMineCode();
-            gamePage();
+            this.remove(pnnl);
+            // backEnd.setMineCode();
+            // gamePage();
+            easyOrHard();
+        }
+        if (e.getSource()==easy) {
+            this.dispose();
+            this.remove(hard);
+            this.remove(easy);
+            backEnd.setMineCode(15);
+            gamePage(15);
+        }
+        if (e.getSource()==hard) {
+            btnArr = new JButton[25][25];
+
+            this.dispose();
+            this.remove(hard);
+            this.remove(easy);
+            backEnd.setMineCode(25);
+            gamePage(25);
         }
     }
    
@@ -107,11 +144,11 @@ public class FrontEnd extends JFrame implements ActionListener{
         restart.setEnabled(false);
         pnll.add(restart);
     }
-    public void gamePage(){
+    public void gamePage(int row){
         this.setSize(frmW, frmH);
         pnl.setBounds(0, 0, frmH, frmH-40);
         pnl.setBackground(new Color(0,102,102));
-        pnl.setLayout(new GridLayout(15,15,0,0));
+        pnl.setLayout(new GridLayout(row,row,0,0));
         pnl2.setBounds(600,0,300 , frmH);
         this.add(pnl);
         this.setTitle("MINESWEEPER");
@@ -127,9 +164,51 @@ public class FrontEnd extends JFrame implements ActionListener{
         this.setLayout(null);
         
         this.setVisible(true);
-        backEnd.setMinesPosition();
+        backEnd.setMinesPosition(row);
 
     }
+    public void easyOrHard(){
+
+        this.setSize(frmW, frmH);
+        this.setResizable(false);
+        getContentPane().setBackground(new Color(116,81,40));
+        this.setTitle("MINESWEEPER");
+        this.setSize(frmW , frmH);
+        
+        this.setDefaultCloseOperation(this.EXIT_ON_CLOSE);
+        this.setLocationRelativeTo(null);
+        this.setLayout(null);
+        
+        
+        easy = new JButton();
+        hard= new JButton();
+        easy.setBounds(frmW/2 -200 ,(frmH-80)/4,400,80);
+        hard.setBounds((frmW/2) -200 ,((frmH-160)/4) *3,400,80);
+        easy.setText("EAZZYY");
+        hard.setText("HAARRD");
+        editButton(easy);
+        editButton(hard);
+        this.setVisible(true);
+
+    }
+    public void editButton(JButton b){
+        b.setSize(400,80);
+        b.setFocusable(false);
+        b.setBackground(new Color(229,111,18));
+        b.setFont(new Font("SansSerif", Font.BOLD  ,30));
+        b.addActionListener(this);
+        this.add(b);
+    }
+public static  void playSound(String soundFile) {
+    try {
+        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(soundFile));
+        Clip clip = AudioSystem.getClip();
+        clip.open(audioInputStream);
+        clip.start();
+    } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+        e.printStackTrace();
+    }
+}
 
 }
 
