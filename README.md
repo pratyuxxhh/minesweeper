@@ -47,3 +47,9 @@ Follow these steps to get the project up and running locally:
 
    ```bash
    git clone https://github.com/pratyuxxhh/minesweeper.git
+2. **Run the jar file**
+
+   
+
+   
+
